@@ -10,6 +10,7 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
+  const [error, setError] = useState("");
 
   const onEmailBlur = (event) => {
     setEmail(event.target.value);
@@ -18,13 +19,18 @@ function App() {
     setPassword(event.target.value);
   };
   const handleFromSubmit = (event) => {
+    event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
       event.stopPropagation();
       return;
     }
+    if (!/(?=.*?[#?!@$%^&*-])/.test(password)) {
+      setError("Please You Should Type a One Spacial character");
+      return;
+    }
     setValidated(true);
+    setError("");
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -64,11 +70,12 @@ function App() {
             Please provide a valid Password.
           </Form.Control.Feedback>
         </Form.Group>
+        <p className="text-danger">{error}</p>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check type="checkbox" label="Check me out" />
         </Form.Group>
         <Button variant="primary" type="submit">
-          Signin
+          SignIn
         </Button>
       </Form>
     </div>
