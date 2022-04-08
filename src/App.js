@@ -13,6 +13,7 @@ import { useState } from "react";
 
 const auth = getAuth(app);
 function App() {
+  // const [name. setName]= useState('');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
@@ -90,6 +91,20 @@ function App() {
         console.error(error);
       });
   };
+  // const setUserName = () => {
+  //   updateProfile(auth.currentUser, {
+  //     displayName: name,
+  //   })
+  //     .then(() => {
+  //       console.log("upodating Name");
+  //     })
+  //     .catch((error) => {
+  //       setUnvalidError(error.message);
+  //     });
+  // };
+  // const onNameBlur = (event) => {
+  //   setName(event.target.value);
+  // };
   const emailVerification = () => {
     sendEmailVerification(auth.currentUser).then(() => {
       console.log("verification SuccessFull");
@@ -102,6 +117,21 @@ function App() {
         Please {register ? "Login" : "Register!!!"}
       </h2>
       <Form noValidate validated={validated} onSubmit={handleFromSubmit}>
+        {!register && (
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              // onBlur={onNameBlur}
+              type="text"
+              placeholder="Name"
+              required
+            />
+            <p className="text-danger">{errorEmail}</p>
+            <Form.Control.Feedback type="invalid">
+              Please provide Your Name.
+            </Form.Control.Feedback>
+          </Form.Group>
+        )}
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
