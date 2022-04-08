@@ -20,6 +20,7 @@ function App() {
   const [errorEmail, setErrorEmail] = useState("");
   const [register, setRegister] = useState("");
   const [unvelidError, setUnvalidError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const onEmailBlur = (event) => {
     setEmail(event.target.value);
@@ -55,10 +56,12 @@ function App() {
           console.log(user);
           setErrorEmail("");
           setUnvalidError("");
+          setSuccess("Login SuccessFull");
         })
         .catch((error) => {
           setUnvalidError(error.message);
           console.error(error);
+          setSuccess("");
         });
     } else {
       createUserWithEmailAndPassword(auth, email, password)
@@ -72,6 +75,7 @@ function App() {
         .catch((error) => {
           setUnvalidError(error.message);
           console.error(error);
+          setSuccess("");
         });
     }
     event.preventDefault();
@@ -126,6 +130,7 @@ function App() {
         </Form.Group>
         <p className="text-danger">{errorPassword}</p>
         <p className="text-danger">{unvelidError}</p>
+        <p className="text-success">{success}</p>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check
             onClick={handleRegisterFrom}
