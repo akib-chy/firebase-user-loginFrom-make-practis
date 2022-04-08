@@ -1,6 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import app from "./firebase.init";
 import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
@@ -12,12 +16,17 @@ function App() {
   const [validated, setValidated] = useState(false);
   const [errorPassword, setErrorPassword] = useState("");
   const [errorEmail, serErrorEmail] = useState("");
+  const [register, setRegister] = useState("");
+  const [unvalidError, setUnvalidError] = useState("");
 
   const onEmailBlur = (event) => {
     setEmail(event.target.value);
   };
   const onPasswordBlur = (event) => {
     setPassword(event.target.value);
+  };
+  const handleRegisterFrom = (event) => {
+    setRegister(event.target.checked);
   };
   const handleFromSubmit = (event) => {
     event.preventDefault();
@@ -37,18 +46,39 @@ function App() {
     setValidated(true);
     serErrorEmail("");
     setErrorPassword("");
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+
+    if (register) {
+      setUnvalidError("");
+      signInWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          setUnvalidError(error.message);
+          console.error(error);
+        });
+    } else {
+      setUnvalidError("");
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          setUnvalidError(error.message);
+          console.error(error);
+        });
+    }
+
     event.preventDefault();
   };
+
   return (
     <div className="container w-50 mt-4 border p-4 rounded shadow">
+      <h2 className="text-primary">
+        Please {register ? "Login" : "Register!!!"}
+      </h2>
       <Form noValidate validated={validated} onSubmit={handleFromSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -77,11 +107,16 @@ function App() {
           </Form.Control.Feedback>
         </Form.Group>
         <p className="text-danger">{errorPassword}</p>
+        <p className="text-danger">{unvalidError}</p>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
+          <Form.Check
+            onClick={handleRegisterFrom}
+            type="checkbox"
+            label="Already Registered?"
+          />
         </Form.Group>
         <Button variant="primary" type="submit">
-          SignIn
+          {register ? "Login" : "Register"}
         </Button>
       </Form>
     </div>
