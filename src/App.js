@@ -10,7 +10,8 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
-  const [error, setError] = useState("");
+  const [errorPassword, setErrorPassword] = useState("");
+  const [errorEmail, serErrorEmail] = useState("");
 
   const onEmailBlur = (event) => {
     setEmail(event.target.value);
@@ -25,12 +26,17 @@ function App() {
       event.stopPropagation();
       return;
     }
+    if (!/^[\w._-]+[+]?[\w._-]+@[\w.-]+\.[a-zA-Z]{2,6}$/.test(email)) {
+      serErrorEmail("Please Type A Valid Email");
+      return;
+    }
     if (!/(?=.*?[#?!@$%^&*-])/.test(password)) {
-      setError("Please You Should Type a One Spacial character");
+      setErrorPassword("Please You Should Type a One Spacial character");
       return;
     }
     setValidated(true);
-    setError("");
+    serErrorEmail("");
+    setErrorPassword("");
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -52,7 +58,7 @@ function App() {
             placeholder="Enter email"
             required
           />
-
+          <p className="text-danger">{errorEmail}</p>
           <Form.Control.Feedback type="invalid">
             Please provide a valid Email.
           </Form.Control.Feedback>
@@ -70,7 +76,7 @@ function App() {
             Please provide a valid Password.
           </Form.Control.Feedback>
         </Form.Group>
-        <p className="text-danger">{error}</p>
+        <p className="text-danger">{errorPassword}</p>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check type="checkbox" label="Check me out" />
         </Form.Group>
