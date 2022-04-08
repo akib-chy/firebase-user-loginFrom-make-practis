@@ -3,6 +3,8 @@ import "./App.css";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "./firebase.init";
@@ -15,9 +17,9 @@ function App() {
   const [password, setPassword] = useState("");
   const [validated, setValidated] = useState(false);
   const [errorPassword, setErrorPassword] = useState("");
-  const [errorEmail, serErrorEmail] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
   const [register, setRegister] = useState("");
-  const [unvalidError, setUnvalidError] = useState("");
+  const [unvelidError, setUnvalidError] = useState("");
 
   const onEmailBlur = (event) => {
     setEmail(event.target.value);
@@ -36,7 +38,7 @@ function App() {
       return;
     }
     if (!/^[\w._-]+[+]?[\w._-]+@[\w.-]+\.[a-zA-Z]{2,6}$/.test(email)) {
-      serErrorEmail("Please Type A Valid Email");
+      setErrorEmail("Please Type A Valid Email");
       return;
     }
     if (!/(?=.*?[#?!@$%^&*-])/.test(password)) {
@@ -44,34 +46,50 @@ function App() {
       return;
     }
     setValidated(true);
-    serErrorEmail("");
     setErrorPassword("");
-
+    setErrorEmail("");
     if (register) {
-      setUnvalidError("");
       signInWithEmailAndPassword(auth, email, password)
         .then((result) => {
           const user = result.user;
           console.log(user);
+          setErrorEmail("");
+          setUnvalidError("");
         })
         .catch((error) => {
           setUnvalidError(error.message);
           console.error(error);
         });
     } else {
-      setUnvalidError("");
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           console.log(user);
+          setErrorEmail("");
+          setUnvalidError("");
+          emailVerification();
         })
         .catch((error) => {
           setUnvalidError(error.message);
           console.error(error);
         });
     }
-
     event.preventDefault();
+  };
+  const handleForgetPassword = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        console.log("email sent");
+      })
+      .catch((error) => {
+        setUnvalidError(error.message);
+        console.error(error);
+      });
+  };
+  const emailVerification = () => {
+    sendEmailVerification(auth.currentUser).then(() => {
+      console.log("verification SuccessFull");
+    });
   };
 
   return (
@@ -107,7 +125,7 @@ function App() {
           </Form.Control.Feedback>
         </Form.Group>
         <p className="text-danger">{errorPassword}</p>
-        <p className="text-danger">{unvalidError}</p>
+        <p className="text-danger">{unvelidError}</p>
         <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Check
             onClick={handleRegisterFrom}
@@ -115,6 +133,11 @@ function App() {
             label="Already Registered?"
           />
         </Form.Group>
+        <Button onClick={handleForgetPassword} variant="link">
+          Forget Password?
+        </Button>
+        <br />
+        <br />
         <Button variant="primary" type="submit">
           {register ? "Login" : "Register"}
         </Button>
