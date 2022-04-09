@@ -23,10 +23,12 @@ function App() {
   const [register, setRegister] = useState("");
   const [unvelidError, setUnvalidError] = useState("");
   const [success, setSuccess] = useState("");
+  const [unValidEmail, setUnvalidEmail] = useState("");
+  const [unValidPassword, setUnvalidPassword] = useState("");
 
-  const onEmailBlur = (event) => {
-    setEmail(event.target.value);
-  };
+  // const onEmailBlur = (event) => {
+  //   setEmail(event.target.value);
+  // };
   const onPasswordBlur = (event) => {
     setPassword(event.target.value);
   };
@@ -34,12 +36,25 @@ function App() {
     setRegister(event.target.checked);
   };
   const handleFromSubmit = (event) => {
+    if (!email) {
+      setUnvalidEmail("Please Type Your Email");
+    }
+    if (email) {
+      setUnvalidEmail("");
+    }
+    if (!password) {
+      setUnvalidPassword("Please Type Password");
+    }
+    if (password) {
+      setUnvalidPassword("");
+    }
     event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.stopPropagation();
       return;
     }
+
     if (!/^[\w._-]+[+]?[\w._-]+@[\w.-]+\.[a-zA-Z]{2,6}$/.test(email)) {
       setErrorEmail("Please Type A Valid Email");
       return;
@@ -48,6 +63,7 @@ function App() {
       setErrorPassword("Please You Should Type a One Spacial character");
       return;
     }
+
     setValidated(true);
     setErrorPassword("");
     setErrorEmail("");
@@ -58,6 +74,7 @@ function App() {
           console.log(user);
           setErrorEmail("");
           setUnvalidError("");
+          setEmail("");
           setSuccess("Login SuccessFull");
         })
         .catch((error) => {
@@ -137,7 +154,8 @@ function App() {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
-            onBlur={onEmailBlur}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="Enter email"
             required
@@ -147,7 +165,7 @@ function App() {
             Please provide a valid Email.
           </Form.Control.Feedback>
         </Form.Group>
-
+        <p className="text-danger">{unValidEmail}</p>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
@@ -160,6 +178,7 @@ function App() {
             Please provide a valid Password.
           </Form.Control.Feedback>
         </Form.Group>
+        <p className="text-danger">{unValidPassword}</p>
         <p className="text-danger">{errorPassword}</p>
         <p className="text-danger">{unvelidError}</p>
         <p className="text-success">{success}</p>
