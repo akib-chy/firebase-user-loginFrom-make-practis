@@ -6,6 +6,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import app from "./firebase.init";
 import { Button, Form } from "react-bootstrap";
@@ -13,9 +14,9 @@ import { useState } from "react";
 
 const auth = getAuth(app);
 function App() {
-  // const [name. setName]= useState('');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [validated, setValidated] = useState(false);
   const [errorPassword, setErrorPassword] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
@@ -72,6 +73,7 @@ function App() {
           setErrorEmail("");
           setUnvalidError("");
           emailVerification();
+          setUserName();
         })
         .catch((error) => {
           setUnvalidError(error.message);
@@ -91,20 +93,20 @@ function App() {
         console.error(error);
       });
   };
-  // const setUserName = () => {
-  //   updateProfile(auth.currentUser, {
-  //     displayName: name,
-  //   })
-  //     .then(() => {
-  //       console.log("upodating Name");
-  //     })
-  //     .catch((error) => {
-  //       setUnvalidError(error.message);
-  //     });
-  // };
-  // const onNameBlur = (event) => {
-  //   setName(event.target.value);
-  // };
+  const setUserName = () => {
+    updateProfile(auth.currentUser, {
+      displayName: name,
+    })
+      .then(() => {
+        console.log("updating Name");
+      })
+      .catch((error) => {
+        setUnvalidError(error.message);
+      });
+  };
+  const onNameBlur = (event) => {
+    setName(event.target.value);
+  };
   const emailVerification = () => {
     sendEmailVerification(auth.currentUser).then(() => {
       console.log("verification SuccessFull");
@@ -121,7 +123,7 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Name</Form.Label>
             <Form.Control
-              // onBlur={onNameBlur}
+              onBlur={onNameBlur}
               type="text"
               placeholder="Name"
               required
